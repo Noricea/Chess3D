@@ -8,6 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import entities.Camera;
+import entities.Playfield;
 
 public class MousePicker {
 
@@ -29,6 +30,7 @@ public class MousePicker {
 	public void update() {
 		viewMatrix = TransMatrices.createViewMatrix(camera);
 		currentRay = calculateMouseRay();
+
 	};
 
 	public boolean pointsAt(Vector3f position) {
@@ -49,7 +51,25 @@ public class MousePicker {
 		return false;
 	}
 
-	private float getDistance(Vector3f pos1, Vector3f pos2) {
+	public Vector3f getField() {
+		Playfield pf = new Playfield();
+		float lambda = 0f;
+		Vector3f ray;
+		
+		for (float height = -0.1f; height <= 0.15f; height += 0.05f) {
+			lambda = (height - camera.getPosition().y) / currentRay.y;
+			
+			ray = new Vector3f(camera.getPosition().x + (lambda * currentRay.x), camera.getPosition().y + (lambda * currentRay.y),
+					camera.getPosition().z + (lambda * currentRay.z));			
+			if(pf.onField(ray)) {
+				return ray;
+			}
+		}
+		
+		return currentRay;
+	}
+
+	public float getDistance(Vector3f pos1, Vector3f pos2) {
 		return (float) Math
 				.sqrt(Math.pow((pos2.x - pos1.x), 2) + Math.pow((pos2.y - pos1.y), 2) + Math.pow((pos2.z - pos1.z), 2));
 	}

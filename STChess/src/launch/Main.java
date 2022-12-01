@@ -34,9 +34,12 @@ public class Main {
 		DisplayManager.createDisplay();
 
 		// List of every Object
-		List<Object> objects = new ArrayList<Object>();
+		List<Object> staticObjects = new ArrayList<Object>();
+		List<Object> movableObjects = new ArrayList<Object>();
 
 		// Setup
+		long cooldown = 0;
+
 		RenderHandler renderer = new RenderHandler();
 		ObjectLoader objLoader = new ObjectLoader();
 		Camera camera = new Camera();
@@ -46,6 +49,12 @@ public class Main {
 		Object board = new Object(
 				new Model(objLoader.loadOBJModel("board"), new TextureHandler(objLoader.loadTexture("board"))),
 				new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0f), 1f);
+//		Object table = new Object(
+//				new Model(objLoader.loadOBJModel("table"), new TextureHandler(objLoader.loadTexture("white"))),
+//				new Vector3f(0f, -0.2f, -0.7f), new Vector3f(0f, 0f, 0f), 1f);
+//		Object glass = new Object(
+//				new Model(objLoader.loadOBJModel("glass"), new TextureHandler(objLoader.loadTexture("white"))),
+//				new Vector3f(0f, -0.2f, -0.7f), new Vector3f(0f, 0f, 0f), 1f);
 		Object t1_k = new Object(
 				new Model(objLoader.loadOBJModel("king"), new TextureHandler(objLoader.loadTexture("white"))),
 				new Vector3f(-0.1f, -0.1f, 0.22f), new Vector3f(0f, 0f, 0f), 1f);
@@ -56,19 +65,24 @@ public class Main {
 		t1_k.incPos(2 * TILE, 0, -TILE);
 		t2_k.incPos(3 * TILE, 0, -TILE);
 
-		objects.add(board);
-		objects.add(t1_k);
-		objects.add(t2_k);
-		long cooldown = 0;
+		staticObjects.add(board);
+		// staticObjects.add(table);
+		// staticObjects.add(glass);
+
+		movableObjects.add(t1_k);
+		movableObjects.add(t2_k);
 
 		while (!Display.isCloseRequested()) {
 			// Prepare
 			camera.move();
 			picker.update();
 
-			for (Object obj : objects) {
+			for (Object obj : staticObjects) {
+				renderer.processObject(obj);
+			}
 
-				if (obj != objects.get(0) && Mouse.isButtonDown(0) && ((System.nanoTime() - cooldown) / 1000000000 >= 1)) {
+			for (Object obj : movableObjects) {
+				if (Mouse.isButtonDown(0) && ((System.nanoTime() - cooldown) / 1000000000 >= 0.5f)) {
 					if (obj.getInHand()) {
 						obj.changeInHand();
 						cooldown = System.nanoTime();
@@ -77,10 +91,9 @@ public class Main {
 						cooldown = System.nanoTime();
 					}
 				}
-				if (obj.getInHand() && obj != objects.get(0)) {
-					obj.setPos(camera.getPosition().x + picker.getCurrentRay().x,
-							camera.getPosition().y + picker.getCurrentRay().y,
-							camera.getPosition().z + picker.getCurrentRay().z);
+				if (obj.getInHand()) {
+					Vector3f pos = picker.getField();
+					obj.setPos(pos);
 				}
 				renderer.processObject(obj);
 			}
