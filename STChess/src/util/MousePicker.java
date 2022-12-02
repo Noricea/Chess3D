@@ -56,7 +56,7 @@ public class MousePicker {
 		float lambda = 0f;
 		Vector3f ray;
 		
-		for (float height = -0.1f; height <= 0.15f; height += 0.05f) {
+		for (float height = 0.15f; height >= -0.1f; height -= 0.05f) {
 			lambda = (height - camera.getPosition().y) / currentRay.y;
 			
 			ray = new Vector3f(camera.getPosition().x + (lambda * currentRay.x), camera.getPosition().y + (lambda * currentRay.y),
@@ -66,7 +66,10 @@ public class MousePicker {
 			}
 		}
 		
-		return currentRay;
+		return new Vector3f(
+				camera.getPosition().x + (currentRay.x * 0.5f),
+				camera.getPosition().y + (currentRay.y * 0.5f), 
+				camera.getPosition().z + (currentRay.z * 0.5f));
 	}
 
 	public float getDistance(Vector3f pos1, Vector3f pos2) {
