@@ -11,6 +11,7 @@ import org.lwjgl.util.vector.Vector3f;
 import entities.Camera;
 import entities.Light;
 import entities.Object;
+import pieces.Team;
 import render.Model;
 import render.ObjectLoader;
 import render.RenderHandler;
@@ -37,8 +38,48 @@ public class Main {
 		List<Object> staticObjects = new ArrayList<Object>();
 		List<Object> movableObjects = new ArrayList<Object>();
 
+		int[] startWhite = { 2, 0, 1, // knight
+				3, 0, 1, // queen
+				1, 0, 1, // bishop
+				4, 0, 1, // bishop
+				1, 1, 0, // knight
+				4, 1, 0, // knight
+				0, 1, 0, // rook
+				5, 1, 0, // rook
+				0, 1, 1, // pawn
+				1, 1, 1, // pawn
+				1, 0, 2, // pawn
+				2, 0, 2, // pawn
+				3, 0, 2, // pawn
+				4, 0, 2, // pawn
+				4, 1, 1, // pawn
+				5, 1, 1 // pawn
+		};
+
+		int[] startBlack = { 2, 4, 10, // knight
+				3, 4, 10, // queen
+				1, 4, 10, // bishop
+				4, 4, 10, // bishop
+				1, 5, 11, // knight
+				4, 5, 11, // knight
+				0, 5, 11, // rook
+				5, 5, 11, // rook
+				0, 5, 10, // pawn
+				1, 5, 10, // pawn
+				1, 4, 9, // pawn
+				2, 4, 9, // pawn
+				3, 4, 9, // pawn
+				4, 4, 9, // pawn
+				4, 5, 10, // pawn
+				5, 5, 10 // pawn
+		};
+
+		Team teamWhite = new Team("white");
+		Team teamBlack = new Team("black");
+
 		// Setup
 		long cooldown = 0;
+		boolean switchTeam = true;
 
 		RenderHandler renderer = new RenderHandler();
 		ObjectLoader objLoader = new ObjectLoader();
@@ -55,22 +96,13 @@ public class Main {
 //		Object glass = new Object(
 //				new Model(objLoader.loadOBJModel("glass"), new TextureHandler(objLoader.loadTexture("white"))),
 //				new Vector3f(0f, -0.2f, -0.7f), new Vector3f(0f, 0f, 0f), 1f);
-		Object t1_k = new Object(
-				new Model(objLoader.loadOBJModel("king"), new TextureHandler(objLoader.loadTexture("white"))),
-				new Vector3f(-0.1f, -0.1f, 0.22f), new Vector3f(0f, 0f, 0f), 1f);
-		Object t2_k = new Object(
-				new Model(objLoader.loadOBJModel("king"), new TextureHandler(objLoader.loadTexture("black"))),
-				new Vector3f(-0.1f, -0.1f, 0.22f), new Vector3f(0f, 0f, 0f), 1f);
-
-		t1_k.incPos(2 * TILE, 0, -TILE);
-		t2_k.incPos(3 * TILE, 0, -TILE);
 
 		staticObjects.add(board);
-		// staticObjects.add(table);
-		// staticObjects.add(glass);
+//		staticObjects.add(table);
+//		staticObjects.add(glass);
 
-		movableObjects.add(t1_k);
-		movableObjects.add(t2_k);
+		teamWhite.init(objLoader, startWhite);
+		teamBlack.init(objLoader, startBlack);
 
 		while (!Display.isCloseRequested()) {
 			// Prepare
@@ -81,27 +113,27 @@ public class Main {
 				renderer.processObject(obj);
 			}
 
-			for (Object obj : movableObjects) {
-				if (Mouse.isButtonDown(0) && ((System.nanoTime() - cooldown) / 1000000000 >= 0.5f)) {
-					if (obj.getInHand()) {
-						obj.changeInHand();
-						cooldown = System.nanoTime();
-					} else if (!obj.getInHand() && picker.pointsAt(obj.getPos())) {
-						obj.changeInHand();
-						cooldown = System.nanoTime();
-					}
+			if (Mouse.isButtonDown(0) && ((System.nanoTime() - cooldown) / 1000000000 >= 0.5f)) {
+				cooldown = System.nanoTime();
+				if(teamWhite.getPicked()) {
+					teamWhite.verifyMove(teamBlack);
 				}
-				if (obj.getInHand()) {
-					Vector3f pos = picker.getField();
-					obj.setPos(pos);
+				else if (teamBlack.getPicked()) {
+					teamBlack.verifyMove(teamWhite);
 				}
-				renderer.processObject(obj);
+				else {
+					teamWhite.isInFocus(picker);
+					teamBlack.isInFocus(picker);
+				}
 			}
-			renderer.render(light, camera);
 
-			// Implement
+			teamWhite.dragAround(picker);
+			teamBlack.dragAround(picker);
 
 			// Render
+			teamWhite.render(renderer);
+			teamBlack.render(renderer);
+			renderer.render(light, camera);
 			DisplayManager.updateDisplay();
 		}
 
@@ -111,91 +143,4 @@ public class Main {
 		DisplayManager.closeDisplay();
 		System.exit(0);
 	}
-
-	/*
-	 * List<Object> team = new ArrayList<Object>();
-	 * 
-	 * ObjectLoader objLoader = new ObjectLoader(); StaticShader shader = new
-	 * StaticShader(); Renderer renderer = new Renderer(shader); Camera camera = new
-	 * Camera(); Light light = new Light(new Vector3f(0, 30, 20), new Vector3f(1, 1,
-	 * 1));
-	 * 
-	 * Object board = new Object( new Model(objLoader.loadOBJModel("board"), new
-	 * TextureHandler(objLoader.loadTexture("board"))), new Vector3f(0f, 0f, 0f),
-	 * new Vector3f(0f, 0f, 0f), 1f);
-	 * 
-	 * //White Object wking = new Object(objLoader.loadOBJModel("king"), new
-	 * Vector3f(-0.1f, -0.1f, 0.22f), new Vector3f(0f, 0f, 0f), 1f); Object wqueen =
-	 * new Object(objLoader.loadOBJModel("queen"), new Vector3f(-0.1f, -0.1f,
-	 * 0.22f), new Vector3f(0f, 0f, 0f), 1f); Object[] wpawn = new Object[8];
-	 * Object[] wrook = new Object[2]; Object[] wbishop = new Object[2]; Object[]
-	 * wknight = new Object[2]; for (int i = 0; i < 8; i++) { if(i < 2) { wrook[i] =
-	 * new Object(objLoader.loadOBJModel("rook"), new Vector3f(-0.1f, -0.1f, 0.22f),
-	 * new Vector3f(0f, 0f, 0f), 1f); wbishop[i] = new
-	 * Object(objLoader.loadOBJModel("bishop"), new Vector3f(-0.1f, -0.1f, 0.22f),
-	 * new Vector3f(0f, 0f, 0f), 1f); wknight[i] = new
-	 * Object(objLoader.loadOBJModel("knight"), new Vector3f(-0.1f, -0.1f, 0.22f),
-	 * new Vector3f(0f, 180f, 0f), 1f); } wpawn[i] = new Object(new
-	 * Model(objLoader.loadOBJModel("pawn"), new
-	 * TextureHandler(objLoader.loadTexture("pawn"))), new Vector3f(-0.1f, -0.1f,
-	 * 0.22f), new Vector3f(0f, 0f, 0f), 1f); if(i < 2) { wpawn[i].incPos(i*TILE,
-	 * LEVEL, -TILE); } else if(i > 5) { wpawn[i].incPos((i-2)*TILE, LEVEL, -TILE);
-	 * } else { wpawn[i].incPos((i-1)*TILE, 0, -2*TILE); } } wrook[0].incPos(0,
-	 * LEVEL, 0); wrook[1].incPos(5*TILE, LEVEL, 0); wbishop[0].incPos(1*TILE, 0,
-	 * -TILE); wbishop[1].incPos(4*TILE, 0, -TILE); wknight[0].incPos(TILE, LEVEL,
-	 * 0); wknight[1].incPos(4*TILE, LEVEL, 0); wking.incPos(3*TILE, 0, -TILE);
-	 * wqueen.incPos(2*TILE, 0, -TILE);
-	 * 
-	 * //Black Object bking = new Object(objLoader.loadOBJModel("king"), new
-	 * Vector3f(-0.1f, -0.1f, 0.22f), new Vector3f(0f, 0f, 0f), 1f); Object bqueen =
-	 * new Object(objLoader.loadOBJModel("queen"), new Vector3f(-0.1f, -0.1f,
-	 * 0.22f), new Vector3f(0f, 0f, 0f), 1f); Object[] bpawn = new Object[8];
-	 * Object[] brook = new Object[2]; Object[] bbishop = new Object[2]; Object[]
-	 * bknight = new Object[2]; for (int i = 0; i < 8; i++) { if(i < 2) { brook[i] =
-	 * new Object(objLoader.loadOBJModel("rook"), new Vector3f(-0.1f, -0.1f, 0.22f),
-	 * new Vector3f(0f, 0f, 0f), 1f); bbishop[i] = new
-	 * Object(objLoader.loadOBJModel("bishop"), new Vector3f(-0.1f, -0.1f, 0.22f),
-	 * new Vector3f(0f, 0f, 0f), 1f); bknight[i] = new
-	 * Object(objLoader.loadOBJModel("knight"), new Vector3f(-0.1f, -0.1f, 0.22f),
-	 * new Vector3f(0f, 0f, 0f), 1f); } bpawn[i] = new Object(new
-	 * Model(objLoader.loadOBJModel("pawn"), new
-	 * TextureHandler(objLoader.loadTexture("pawn"))), new Vector3f(-0.1f, -0.1f,
-	 * 0.22f), new Vector3f(0f, 0f, 0f), 1f); if(i < 2) { bpawn[i].incPos(i*TILE,
-	 * 5*LEVEL, -10*TILE); } else if(i > 5) { bpawn[i].incPos((i-2)*TILE, 5*LEVEL,
-	 * -10*TILE); } else { bpawn[i].incPos((i-1)*TILE, 4*LEVEL, -9*TILE); } }
-	 * brook[0].incPos(0, 5*LEVEL, -11*TILE); brook[1].incPos(5*TILE, 5*LEVEL,
-	 * -11*TILE); bbishop[0].incPos(1*TILE, 4*LEVEL, -10*TILE);
-	 * bbishop[1].incPos(4*TILE, 4*LEVEL, -10*TILE); bknight[0].incPos(TILE,
-	 * 5*LEVEL, -11*TILE); bknight[1].incPos(4*TILE, 5*LEVEL, -11*TILE);
-	 * bking.incPos(3*TILE, 4*LEVEL, -10*TILE); bqueen.incPos(2*TILE, 4*LEVEL,
-	 * -10*TILE);
-	 * 
-	 * 
-	 * 
-	 * ///////// // Prepare camera.move(); renderer.prepare(); shader.start();
-	 * shader.loadLight(light); shader.loadViewMatrix(camera);
-	 * 
-	 * // Implement
-	 * 
-	 * // Render
-	 * 
-	 * renderer.render(board, shader);
-	 * 
-	 * //White for (int i = 0; i < 8; i++) { renderer.render(wpawn[i], shader); if(i
-	 * < 2) { renderer.render(wrook[i], shader); renderer.render(wbishop[i],
-	 * shader); renderer.render(wknight[i], shader); } } renderer.render(wking,
-	 * shader); renderer.render(wqueen, shader);
-	 * 
-	 * //Black for (int i = 0; i < 8; i++) { renderer.render(bpawn[i], shader); if(i
-	 * < 2) { renderer.render(brook[i], shader); renderer.render(bbishop[i],
-	 * shader); renderer.render(bknight[i], shader); } } renderer.render(bking,
-	 * shader); renderer.render(bqueen, shader);
-	 * 
-	 * // Unprepare shader.stop();
-	 * 
-	 * 
-	 * 
-	 * shader.cleanUp(); objLoader.cleanUp();
-	 */
-
 }

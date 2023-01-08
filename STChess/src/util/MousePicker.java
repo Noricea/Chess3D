@@ -40,10 +40,10 @@ public class MousePicker {
 		float x = camera.getPosition().x + (distance * currentRay.x);
 		float y = camera.getPosition().y + (distance * currentRay.y);
 		float z = camera.getPosition().z + (distance * currentRay.z);
-
-		if (x < (position.x + 0.011f) && x > (position.x - 0.011f)) {
-			if (y < (position.y + 0.0065f) && y > (position.y)) {
-				if (z < (position.z + 0.011f) && z > (position.z - 0.011f)) {
+		
+		if (x < (position.x + 0.015f) && x > (position.x - 0.015f)) {
+			if (y < (position.y + 0.01f) && y > (position.y)) {
+				if (z < (position.z + 0.015f) && z > (position.z - 0.015f)) {
 					return true;
 				}
 			}
@@ -59,13 +59,14 @@ public class MousePicker {
 		for (float height = 0.15f; height >= -0.1f; height -= 0.05f) {
 			lambda = (height - camera.getPosition().y) / currentRay.y;
 			
-			ray = new Vector3f(camera.getPosition().x + (lambda * currentRay.x), camera.getPosition().y + (lambda * currentRay.y),
+			ray = new Vector3f(
+					camera.getPosition().x + (lambda * currentRay.x), 
+					camera.getPosition().y + (lambda * currentRay.y),
 					camera.getPosition().z + (lambda * currentRay.z));			
 			if(pf.onField(ray)) {
-				return ray;
+				return new Vector3f(ray.x + (ray.x > 0f ? 0.02f : -0.02f) - ((ray.x) % 0.04f), ray.y, ray.z + (ray.z > 0f ? 0.02f : -0.02f) - ((ray.z) % 0.04f));
 			}
-		}
-		
+		}		
 		return new Vector3f(
 				camera.getPosition().x + (currentRay.x * 0.5f),
 				camera.getPosition().y + (currentRay.y * 0.5f), 

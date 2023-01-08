@@ -8,7 +8,7 @@ public class Object {
 	private Model model;
 	private Vector3f pos, rotation;
 	private float scale;
-	boolean inHand = false;
+	private boolean inHand = false;
 	
 	public Object(Model model, Vector3f pos, Vector3f rotation, float scale) {
 		super();
@@ -66,6 +66,10 @@ public class Object {
 	
 	public boolean getInHand() {
 		return inHand;
+	}
+	
+	public void setInHand(boolean inHand) {
+		this.inHand = inHand;
 	}
 	
 	public void changeInHand() {
