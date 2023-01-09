@@ -80,6 +80,7 @@ public class Main {
 		// Setup
 		long cooldown = 0;
 		boolean switchTeam = true;
+		boolean displayTable = false;
 
 		RenderHandler renderer = new RenderHandler();
 		ObjectLoader objLoader = new ObjectLoader();
@@ -90,16 +91,20 @@ public class Main {
 		Object board = new Object(
 				new Model(objLoader.loadOBJModel("board"), new TextureHandler(objLoader.loadTexture("board"))),
 				new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0f), 1f);
-//		Object table = new Object(
-//				new Model(objLoader.loadOBJModel("table"), new TextureHandler(objLoader.loadTexture("white"))),
-//				new Vector3f(0f, -0.2f, -0.7f), new Vector3f(0f, 0f, 0f), 1f);
-//		Object glass = new Object(
-//				new Model(objLoader.loadOBJModel("glass"), new TextureHandler(objLoader.loadTexture("white"))),
-//				new Vector3f(0f, -0.2f, -0.7f), new Vector3f(0f, 0f, 0f), 1f);
-
 		staticObjects.add(board);
-//		staticObjects.add(table);
-//		staticObjects.add(glass);
+		
+		if (displayTable) {
+			Object table = new Object(
+					new Model(objLoader.loadOBJModel("table"), new TextureHandler(objLoader.loadTexture("white"))),
+					new Vector3f(0f, -0.2f, -0.7f), new Vector3f(0f, 0f, 0f), 1f);
+			Object glass = new Object(
+					new Model(objLoader.loadOBJModel("glass"), new TextureHandler(objLoader.loadTexture("white"))),
+					new Vector3f(0f, -0.2f, -0.7f), new Vector3f(0f, 0f, 0f), 1f);
+			staticObjects.add(table);
+			staticObjects.add(glass);
+		}
+
+
 
 		teamWhite.init(objLoader, startWhite);
 		teamBlack.init(objLoader, startBlack);
