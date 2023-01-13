@@ -84,6 +84,7 @@ public class Team {
 				fallbackPosition = unit.getPosition();
 				unit.getFigure().setInHand(true);
 				anyPicked = true;
+				break;
 			}
 		}
 	}

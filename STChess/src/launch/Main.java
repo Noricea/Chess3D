@@ -80,7 +80,7 @@ public class Main {
 		// Setup
 		long cooldown = 0;
 		boolean switchTeam = true;
-		boolean displayTable = false; //Wenn der Tisch im Programm gewünscht ist, hier TRUE setzen.
+		boolean displayTable = true; //Wenn der Tisch im Programm gewünscht ist, hier TRUE setzen.
 
 		RenderHandler renderer = new RenderHandler();
 		ObjectLoader objLoader = new ObjectLoader();

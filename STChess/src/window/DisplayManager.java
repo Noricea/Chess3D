@@ -22,6 +22,7 @@ public class DisplayManager {
 			Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
 			Display.setLocation(0, 0);
 			Display.create(new PixelFormat(), attribs);
+			Display.setInitialBackground(0, 0, 0);
 			Display.setTitle("Chess");
 		} catch (LWJGLException e) {
 			e.printStackTrace();

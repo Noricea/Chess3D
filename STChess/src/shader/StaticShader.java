@@ -20,10 +20,10 @@ public class StaticShader extends ShaderProgram {
 	public StaticShader() {
 		super((System.getProperty("os.name").toLowerCase().contains("nix")
 				|| System.getProperty("os.name").toLowerCase().contains("nux") ? "src/shader/vertex.vs"
-						: "STChess/src/shader/vertex.vs"),
+						: "src\\shader\\vertex.vs"),
 				(System.getProperty("os.name").toLowerCase().contains("nix")
 						|| System.getProperty("os.name").toLowerCase().contains("nux") ? "src/shader/fragment.vs"
-								: "STChess/src/shader/fragment.vs"));
+								: "src\\shader\\fragment.vs"));
 	}
 
 	@Override
