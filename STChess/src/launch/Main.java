@@ -145,7 +145,7 @@ public class Main {
 		// Closing everything
 		renderer.cleanUp();
 		objLoader.cleanUp();
-		DisplayManager.closeDisplay();
+		DisplayManager.cleanUp();
 		System.exit(0);
 	}
 }

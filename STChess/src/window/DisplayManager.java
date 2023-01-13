@@ -38,7 +38,7 @@ public class DisplayManager {
 		
 	}
 	
-	public static void closeDisplay(){
+	public static void cleanUp(){
 		
 		Display.destroy();
 		

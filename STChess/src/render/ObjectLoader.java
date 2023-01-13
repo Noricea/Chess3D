@@ -63,34 +63,6 @@ public class ObjectLoader {
 		return textureID;
 	}
 
-	public int loadTexture2(String fileName) {
-		int width, height;
-		int imageSize;
-		ByteBuffer buffer = null;
-
-		File file = new File("res/" + fileName + ".png");
-		FileInputStream fileInputStream = null;
-		byte[] data = new byte[(int) file.length()];
-
-		try {
-			
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		int id = GL11.glGenTextures();
-		textures.add(id);
-		
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
-		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 1024, 1024, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
-				buffer);
-		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-
-		return id;
-	}
-
 	public Model loadOBJModel(String fileName) {
 
 		if (System.getProperty("os.name").toLowerCase().contains("nix")
